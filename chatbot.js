@@ -1,7 +1,14 @@
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 class SupplierChatbot {
   constructor(database) {
     this.db = database;
     this.context = null;
+    this.genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
+    this.model = this.genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
   }
 
   async initialize() {
@@ -40,9 +47,7 @@ class SupplierChatbot {
     const query = userQuery.toLowerCase();
     
     try {
-      // Enhanced query processing with comprehensive data access
-      const context = await this.getQueryContext(query);
-      
+      // Check for specific patterns first
       if (query.includes('best supplier') || query.includes('recommend')) {
         return await this.getBestSupplierRecommendation();
       }
@@ -73,7 +78,8 @@ class SupplierChatbot {
         return await this.getSupplierDetails(supplierMatch);
       }
       
-      return await this.getGeneralSupplierOverview();
+      // Use AI for complex queries
+      return await this.processWithAI(userQuery);
     } catch (error) {
       console.error('Error processing query:', error);
       return {
@@ -89,11 +95,13 @@ class SupplierChatbot {
     const suppliers = await this.db.query('SELECT * FROM suppliers');
     const recentNotes = await this.db.query('SELECT * FROM supplier_notes ORDER BY created_at DESC LIMIT 20');
     const metrics = await this.db.getSupplierMetrics();
+    const orders = await this.db.query('SELECT * FROM supplier_orders');
     
     return {
       suppliers,
       recentNotes,
       metrics,
+      order,
       query
     };
   }
@@ -338,6 +346,49 @@ class SupplierChatbot {
     };
   }
 
+  async processWithAI(userQuery) {
+    const context = await this.buildSupplierContext();
+    
+    const prompt = `You are a supplier performance analyst. Answer the user's question using the supplier data provided.
+
+Supplier Data:
+${JSON.stringify(context, null, 2)}
+
+User Question: ${userQuery}
+
+Provide a helpful, data-driven response. If asking about specific suppliers, include relevant metrics. Keep responses concise but informative.`;
+
+    try {
+      const result = await this.model.generateContent(prompt);
+      const response = await result.response;
+      
+      return {
+        type: 'ai_response',
+        message: response.text(),
+        context: 'AI-powered analysis using supplier data'
+      };
+    } catch (error) {
+      console.error('AI processing error:', error);
+      return await this.getGeneralSupplierOverview();
+    }
+  }
+
+  async buildSupplierContext() {
+    const [suppliers, metrics, recentNotes] = await Promise.all([
+      this.db.query('SELECT * FROM suppliers LIMIT 10'),
+      this.db.getSupplierMetrics(),
+      this.db.query('SELECT supplier_name, sentiment, sentiment_score, content FROM supplier_notes ORDER BY created_at DESC LIMIT 20')
+    ]);
+    
+    return {
+      suppliers: suppliers.map(s => ({ name: s.supplier_name, id: s.supplier_id })),
+      delivery_performance: metrics.delivery,
+      quality_metrics: metrics.quality,
+      pricing_data: metrics.pricing,
+      recent_feedback: recentNotes
+    };
+  }
+
   async getGeneralSupplierOverview() {
     const totalSuppliers = await this.db.query('SELECT COUNT(*) as count FROM suppliers');
     const totalOrders = await this.db.query('SELECT COUNT(*) as count, SUM(po_amount) as total_value FROM supplier_orders');
@@ -361,4 +412,4 @@ class SupplierChatbot {
   }
 }
 
-module.exports = SupplierChatbot;
+export default SupplierChatbot;

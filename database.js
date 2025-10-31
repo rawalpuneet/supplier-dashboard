@@ -1,7 +1,11 @@
-const sqlite3 = require('sqlite3').verbose();
-const csv = require('csv-parser');
-const fs = require('fs');
-const path = require('path');
+import sqlite3 from 'sqlite3';
+import csv from 'csv-parser';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 class Database {
   constructor() {
@@ -160,8 +164,8 @@ class Database {
   }
 
   async loadSupplierNotes() {
-    const NotesParser = require('./notesParser');
-    const SupplierManager = require('./supplierManager');
+    const { default: NotesParser } = await import('./notesParser.js');
+    const { default: SupplierManager } = await import('./supplierManager.js');
     const parser = new NotesParser();
     const supplierManager = new SupplierManager();
     
@@ -298,4 +302,4 @@ class Database {
   }
 }
 
-module.exports = Database;
+export default Database;

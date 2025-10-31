@@ -1,2 +1,10 @@
-requirements/*
 node_modules/*
+.env
+.DS_Store
+dist/
+build/
+coverage/
+.vscode/
+.idea/
+package-lock.json
+requirements/*

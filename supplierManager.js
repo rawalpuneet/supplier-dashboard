@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 class SupplierManager {
   constructor() {
@@ -61,4 +61,4 @@ class SupplierManager {
   }
 }
 
-module.exports = SupplierManager;
+export default SupplierManager;

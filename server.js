@@ -1,9 +1,16 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const fs = require('fs');
-const Database = require('./database');
-const SupplierChatbot = require('./chatbot');
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+import Database from './database.js';
+import SupplierChatbot from './chatbot.js';
+
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -326,9 +333,9 @@ app.get('/api/sentiment-analysis', async (req, res) => {
 });
 
 // Test notes parser
-app.get('/api/test-parser', (req, res) => {
+app.get('/api/test-parser', async (req, res) => {
   try {
-    const NotesParser = require('./notesParser');
+    const { default: NotesParser } = await import('./notesParser.js');
     const parser = new NotesParser();
     const notesFilePath = path.join(__dirname, 'requirements/Solutions Architect sample data/supplier_notes.txt');
     
@@ -385,4 +392,4 @@ initializeApp().then(() => {
   });
 });
 
-module.exports = app;
+export default app;

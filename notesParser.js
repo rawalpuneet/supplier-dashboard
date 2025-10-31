@@ -1,26 +1,11 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import natural from 'natural';
 
 class NotesParser {
   constructor() {
-    this.sentimentWords = {
-      positive: [
-        'excellent', 'perfect', 'outstanding', 'reliable', 'good', 'great', 'best', 
-        'premium', 'quality', 'flawless', 'accurate', 'competitive', 'solid', 
-        'dependable', 'trust', 'worth', 'amazing', 'spectacular', 'unmatched',
-        'delivered early', 'zero defects', 'never missed', 'zero rework'
-      ],
-      negative: [
-        'late', 'delayed', 'poor', 'terrible', 'bad', 'issues', 'problems', 
-        'failed', 'rejected', 'defects', 'unacceptable', 'mediocre', 'disaster',
-        'complained', 'leaked', 'wrong', 'unusable', 'gamble', 'regret',
-        'weeks late', 'quality issues', 'delivery issues', 'not happy'
-      ],
-      neutral: [
-        'standard', 'fair', 'acceptable', 'fine', 'okay', 'usual', 'normal',
-        'consistent', 'default', 'average'
-      ]
-    };
+    this.analyzer = new natural.SentimentAnalyzer('English', natural.PorterStemmer, 'afinn');
+    this.tokenizer = new natural.WordTokenizer();
   }
 
   parseNotesFile(filePath) {
@@ -223,76 +208,24 @@ class NotesParser {
   }
 
   analyzeSentiment(text) {
-    const lowerText = text.toLowerCase();
-    let positiveScore = 0;
-    let negativeScore = 0;
+    const tokens = this.tokenizer.tokenize(text.toLowerCase());
+    const score = this.analyzer.getSentiment(tokens);
     
-    // Count positive words
-    this.sentimentWords.positive.forEach(word => {
-      const regex = new RegExp(`\\b${word}\\b`, 'gi');
-      const matches = lowerText.match(regex);
-      if (matches) positiveScore += matches.length;
-    });
-    
-    // Count negative words
-    this.sentimentWords.negative.forEach(word => {
-      const regex = new RegExp(`\\b${word}\\b`, 'gi');
-      const matches = lowerText.match(regex);
-      if (matches) negativeScore += matches.length;
-    });
-    
-    // Determine sentiment
-    if (positiveScore > negativeScore) return 'POSITIVE';
-    if (negativeScore > positiveScore) return 'NEGATIVE';
+    if (score > 0.1) return 'POSITIVE';
+    if (score < -0.1) return 'NEGATIVE';
     return 'NEUTRAL';
   }
 
   calculateSentimentScore(text) {
-    const lowerText = text.toLowerCase();
-    let score = 0;
-    
-    // Add points for positive words
-    this.sentimentWords.positive.forEach(word => {
-      const regex = new RegExp(`\\b${word}\\b`, 'gi');
-      const matches = lowerText.match(regex);
-      if (matches) score += matches.length;
-    });
-    
-    // Subtract points for negative words
-    this.sentimentWords.negative.forEach(word => {
-      const regex = new RegExp(`\\b${word}\\b`, 'gi');
-      const matches = lowerText.match(regex);
-      if (matches) score -= matches.length;
-    });
-    
-    // Normalize to -1 to 1 scale
-    return Math.max(-1, Math.min(1, score / 10));
+    const tokens = this.tokenizer.tokenize(text.toLowerCase());
+    return this.analyzer.getSentiment(tokens);
   }
 
   extractKeywords(text) {
-    const keywords = [];
-    const lowerText = text.toLowerCase();
-    
-    // Quality-related keywords
-    const qualityKeywords = ['quality', 'defects', 'rework', 'rejection', 'perfect', 'excellent'];
-    qualityKeywords.forEach(keyword => {
-      if (lowerText.includes(keyword)) keywords.push(keyword);
-    });
-    
-    // Delivery-related keywords
-    const deliveryKeywords = ['late', 'early', 'delivery', 'deadline', 'on time', 'delayed'];
-    deliveryKeywords.forEach(keyword => {
-      if (lowerText.includes(keyword)) keywords.push(keyword);
-    });
-    
-    // Pricing-related keywords
-    const pricingKeywords = ['price', 'cost', 'expensive', 'cheap', 'premium', 'competitive'];
-    pricingKeywords.forEach(keyword => {
-      if (lowerText.includes(keyword)) keywords.push(keyword);
-    });
-    
-    return keywords.slice(0, 5); // Limit to top 5 keywords
+    const tokens = this.tokenizer.tokenize(text.toLowerCase());
+    const keywords = ['quality', 'delivery', 'price', 'defects', 'late', 'early', 'excellent', 'poor', 'competitive', 'expensive'];
+    return tokens.filter(token => keywords.includes(token)).slice(0, 5);
   }
 }
 
-module.exports = NotesParser;
+export default NotesParser;
