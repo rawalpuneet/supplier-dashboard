@@ -9,6 +9,7 @@ class SupplierChatbot {
     this.context = null;
     this.genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
     this.model = this.genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    this.chatHistory = new Map(); // sessionId -> messages array
   }
 
   async initialize() {
@@ -42,9 +43,17 @@ class SupplierChatbot {
     };
   }
 
-  async processQuery(userQuery) {
+  async processQuery(userQuery, sessionId = 'default', isNewChat = false) {
     console.log('Processing query:', userQuery);
     const query = userQuery.toLowerCase();
+    
+    // Initialize or clear chat history for new chats
+    if (isNewChat || !this.chatHistory.has(sessionId)) {
+      this.chatHistory.set(sessionId, []);
+    }
+    
+    // Add user message to history
+    this.chatHistory.get(sessionId).push({ role: 'user', content: userQuery });
     
     try {
       // Check for specific patterns first
@@ -79,7 +88,12 @@ class SupplierChatbot {
       }
       
       // Use AI for complex queries
-      return await this.processWithAI(userQuery);
+      const response = await this.processWithAI(userQuery, sessionId);
+      
+      // Add bot response to history
+      this.chatHistory.get(sessionId).push({ role: 'assistant', content: response.message });
+      
+      return response;
     } catch (error) {
       console.error('Error processing query:', error);
       return {
@@ -346,13 +360,24 @@ class SupplierChatbot {
     };
   }
 
-  async processWithAI(userQuery) {
+  async processWithAI(userQuery, sessionId) {
     const context = await this.buildSupplierContext();
+    const history = this.chatHistory.get(sessionId) || [];
     
-    const prompt = `You are a supplier performance analyst. Answer the user's question using the supplier data provided.
+    let prompt = `You are a supplier performance analyst. Answer the user's question using the supplier data provided.
 
 Supplier Data:
-${JSON.stringify(context, null, 2)}
+${JSON.stringify(context, null, 2)}`;
+    
+    // Add conversation history if exists
+    if (history.length > 1) {
+      prompt += `
+
+Conversation History:
+${history.slice(0, -1).map(msg => `${msg.role}: ${msg.content}`).join('\n')}`;
+    }
+    
+    prompt += `
 
 User Question: ${userQuery}
 

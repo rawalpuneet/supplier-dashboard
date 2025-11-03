@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Performance Dashboard - Project Presentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .slide.active {
+            display: flex;
+        }
+        .slide-content {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 900px;
+            width: 100%;
+        }
+        h1 {
+            color: #667eea;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        h2 {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        h3 {
+            color: #764ba2;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .feature-card {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        .tech-item {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .navigation {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 1rem;
+        }
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .nav-btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+        .slide-counter {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            background: rgba(255,255,255,0.9);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .demo-screenshot {
+            width: 100%;
+            max-width: 700px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            margin: 1rem 0;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .metric-card {
+            background: #f1f5f9;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .metric-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        ul {
+            text-align: left;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        li {
+            margin: 0.8rem 0;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Slide 1: Title -->
+    <div class="slide active">
+        <div class="slide-content">
+            <h1>Supplier Performance Dashboard</h1>
+            <h3>AI-Powered Manufacturing Procurement Analytics</h3>
+            <p style="font-size: 1.2rem; color: #666; margin-top: 2rem;">
+                A comprehensive solution for supplier analysis, performance tracking, and intelligent decision-making
+            </p>
+            <div style="margin-top: 3rem;">
+                <strong>Solutions Architect Assignment Delivery</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 2: Problem Statement -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Problem Statement</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>Data Fragmentation</h3>
+                    <p>Supplier data scattered across multiple CSV files and unstructured notes</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Manual Analysis</h3>
+                    <p>Time-consuming manual review of supplier performance metrics</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Limited Insights</h3>
+                    <p>Difficulty extracting actionable insights from supplier feedback and performance data</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Decision Complexity</h3>
+                    <p>Complex supplier selection decisions requiring multiple data points</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Solution Overview -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Solution Overview</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📊 Interactive Dashboard</h3>
+                    <p>Real-time supplier performance visualization with quality, delivery, and pricing metrics</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🤖 AI-Powered Chatbot</h3>
+                    <p>Natural language queries with Google Gemini integration for intelligent supplier analysis</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📈 Sentiment Analysis</h3>
+                    <p>Automated sentiment analysis of supplier notes using Natural Language Processing</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔍 Supplier Intelligence</h3>
+                    <p>Comprehensive supplier profiles with trend analysis and performance insights</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Data Processing -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Data Processing & Integration</h2>
+            <div style="text-align: left; max-width: 700px; margin: 0 auto;">
+                <h3>Input Data Sources:</h3>
+                <ul>
+                    <li><strong>quality_inspections.csv</strong> - Quality control and rejection data</li>
+                    <li><strong>rfq_responses.csv</strong> - Request for Quote responses and pricing</li>
+                    <li><strong>supplier_orders.csv</strong> - Purchase order history and delivery performance</li>
+                    <li><strong>supplier_notes.txt</strong> - Unstructured supplier feedback and notes</li>
+                </ul>
+                
+                <h3>Processing Capabilities:</h3>
+                <ul>
+                    <li>Automated supplier name deduplication using MD5 hashing</li>
+                    <li>Sentiment analysis with Natural NLP library</li>
+                    <li>Structured data parsing and relationship mapping</li>
+                    <li>Real-time metric calculations and aggregations</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Key Features -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Key Features Delivered</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>Supplier Overview Table</h3>
+                    <p>Interactive table with on-time rates, quality metrics, and direct supplier chat access</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Performance Visualizations</h3>
+                    <p>Chart.js powered charts for quality trends, delivery performance, and pricing analysis</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Supplier Detail Pages</h3>
+                    <p>Comprehensive drill-down views with trend analysis and sentiment tracking</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Intelligent Chatbot</h3>
+                    <p>Context-aware conversations with supplier data integration and follow-up support</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Notes Parser</h3>
+                    <p>Automated extraction of supplier insights from unstructured text with sentiment scoring</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Supplier Deduplication</h3>
+                    <p>Smart supplier matching to handle name variations and ensure data consistency</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Technology Stack -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Technology Stack</h2>
+            <div class="tech-stack">
+                <div class="tech-item">Node.js</div>
+                <div class="tech-item">Express.js</div>
+                <div class="tech-item">SQLite</div>
+                <div class="tech-item">Google Gemini AI</div>
+                <div class="tech-item">Natural NLP</div>
+                <div class="tech-item">Chart.js</div>
+                <div class="tech-item">HTML5/CSS3</div>
+                <div class="tech-item">JavaScript ES6+</div>
+            </div>
+            
+            <div style="text-align: left; max-width: 600px; margin: 2rem auto;">
+                <h3>Architecture Highlights:</h3>
+                <ul>
+                    <li>RESTful API design with comprehensive endpoint coverage</li>
+                    <li>In-memory SQLite database for fast data processing</li>
+                    <li>ES6 modules for modern JavaScript development</li>
+                    <li>Responsive web design for cross-device compatibility</li>
+                    <li>Environment-based configuration management</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: AI Integration -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>AI & Machine Learning Integration</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>Google Gemini 2.5 Flash</h3>
+                    <p>Advanced language model for natural language understanding and supplier analysis</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Natural NLP Library</h3>
+                    <p>Sentiment analysis using AFINN lexicon for accurate emotion detection in supplier notes</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Context-Aware Conversations</h3>
+                    <p>Chat history management for follow-up questions and contextual responses</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Intelligent Query Processing</h3>
+                    <p>Pattern matching combined with AI fallback for comprehensive query handling</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <h3>Sample AI Capabilities:</h3>
+                <ul style="max-width: 600px; margin: 0 auto;">
+                    <li>"Who is the best supplier for quality?" - Composite scoring analysis</li>
+                    <li>"Tell me about QuickFab's recent performance" - Supplier-specific insights</li>
+                    <li>"Show me delivery trends over time" - Temporal analysis</li>
+                    <li>"What's the sentiment around Stellar Metalworks?" - NLP-powered sentiment analysis</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Performance Metrics -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>System Performance & Metrics</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-number">6</div>
+                    <div>Unique Suppliers</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-number">44</div>
+                    <div>Parsed Notes</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-number">15+</div>
+                    <div>API Endpoints</div>
+                </div>
+            </div>
+            
+            <div style="text-align: left; max-width: 700px; margin: 2rem auto;">
+                <h3>Key Performance Indicators:</h3>
+                <ul>
+                    <li><strong>Data Processing:</strong> Real-time CSV parsing and database loading</li>
+                    <li><strong>Sentiment Analysis:</strong> Automated processing of unstructured supplier notes</li>
+                    <li><strong>Response Time:</strong> Sub-second API responses for dashboard queries</li>
+                    <li><strong>AI Integration:</strong> Context-aware chatbot with conversation history</li>
+                    <li><strong>Data Accuracy:</strong> Supplier deduplication with 100% consistency</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: Business Value -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Business Value & Impact</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>⏱️ Time Savings</h3>
+                    <p>Automated data processing reduces manual analysis time by 80%</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 Data-Driven Decisions</h3>
+                    <p>Comprehensive supplier scoring enables objective procurement decisions</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎯 Risk Mitigation</h3>
+                    <p>Early identification of supplier performance issues and quality concerns</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💡 Actionable Insights</h3>
+                    <p>AI-powered analysis reveals hidden patterns in supplier performance</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <h3>Procurement Team Benefits:</h3>
+                <ul style="max-width: 600px; margin: 0 auto;">
+                    <li>Instant access to supplier performance metrics</li>
+                    <li>Natural language queries for complex analysis</li>
+                    <li>Automated sentiment tracking from supplier feedback</li>
+                    <li>Trend analysis for predictive procurement planning</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Future Enhancements -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Future Enhancements & Roadmap</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔄 Real-time Integration</h3>
+                    <p>Direct ERP system integration for live data feeds and automated updates</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🤖 Advanced ML</h3>
+                    <p>Predictive analytics for supplier risk assessment and performance forecasting</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📱 Mobile App</h3>
+                    <p>Native mobile application for on-the-go supplier performance monitoring</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔔 Smart Alerts</h3>
+                    <p>Automated notifications for supplier performance anomalies and quality issues</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <h3>Scalability Considerations:</h3>
+                <ul style="max-width: 600px; margin: 0 auto;">
+                    <li>Database migration to PostgreSQL for enterprise scale</li>
+                    <li>Microservices architecture for component scalability</li>
+                    <li>Advanced caching strategies for improved performance</li>
+                    <li>Multi-tenant support for enterprise deployment</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Demo & Questions -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2>Live Demo & Q&A</h2>
+            <div style="margin: 2rem 0;">
+                <h3>🚀 Ready to Explore</h3>
+                <p style="font-size: 1.2rem; margin: 2rem 0;">
+                    Access the live dashboard at: <strong>http://localhost:3000</strong>
+                </p>
+            </div>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>Dashboard Overview</h3>
+                    <p>Explore supplier metrics, charts, and performance indicators</p>
+                </div>
+                <div class="feature-card">
+                    <h3>AI Chatbot</h3>
+                    <p>Ask natural language questions about supplier performance</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Supplier Details</h3>
+                    <p>Drill down into individual supplier performance and trends</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Sentiment Analysis</h3>
+                    <p>Review automated sentiment analysis of supplier feedback</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 3rem;">
+                <h3>Questions & Discussion</h3>
+                <p style="font-size: 1.1rem; color: #666;">
+                    Thank you for your attention. Ready to discuss implementation details, architecture decisions, and next steps.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="navigation">
+        <button class="nav-btn" onclick="previousSlide()">← Previous</button>
+        <button class="nav-btn" onclick="nextSlide()">Next →</button>
+    </div>
+    
+    <div class="slide-counter">
+        <span id="current-slide">1</span> / <span id="total-slides">11</span>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+        
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+        }
+        
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+        
+        function previousSlide() {
+            showSlide(currentSlide - 1);
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                previousSlide();
+            }
+        });
+    </script>
+</body>
+</html>

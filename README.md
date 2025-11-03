@@ -2,10 +2,6 @@
 
 A comprehensive supplier analysis dashboard with AI-powered chatbot for manufacturing procurement decisions.
 
-## Dashboard Preview
-
-![Supplier Dashboard](assets/dashboard.png)
-
 ## Features
 
 ### 1. Supplier Dashboard

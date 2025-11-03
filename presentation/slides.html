@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Performance Dashboard - CADDi Presentation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a1a; color: white; }
+        .slideshow-container { position: relative; max-width: 100%; margin: auto; }
+        .slide { display: none; padding: 60px; text-align: center; min-height: 100vh; }
+        .slide.active { display: block; }
+        .slide h1 { font-size: 3em; margin-bottom: 30px; color: #4CAF50; }
+        .slide h2 { font-size: 2.5em; margin-bottom: 25px; color: #2196F3; }
+        .slide h3 { font-size: 2em; margin-bottom: 20px; color: #FF9800; }
+        .slide p, .slide li { font-size: 1.4em; line-height: 1.6; margin-bottom: 15px; }
+        .slide ul { text-align: left; max-width: 800px; margin: 0 auto; }
+        .slide li { margin-bottom: 10px; }
+        .highlight { background: #FF5722; padding: 5px 10px; border-radius: 5px; }
+        .success { color: #4CAF50; font-weight: bold; }
+        .warning { color: #FF9800; font-weight: bold; }
+        .danger { color: #F44336; font-weight: bold; }
+        .nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); }
+        .nav button { background: #2196F3; color: white; border: none; padding: 10px 20px; margin: 0 5px; cursor: pointer; border-radius: 5px; }
+        .nav button:hover { background: #1976D2; }
+        .slide-counter { position: fixed; top: 20px; right: 20px; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 5px; }
+        .two-column { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; }
+        .column { flex: 1; text-align: left; }
+        .demo-box { background: #333; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        .metric { background: #2196F3; padding: 15px; margin: 10px; border-radius: 8px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="slideshow-container">
+        
+        <!-- Slide 1: Hook -->
+        <div class="slide active">
+            <h1>$4M Problem</h1>
+            <h2>Hoth Industries is losing <span class="danger">$4 million annually</span> from bad supplier decisions</h2>
+            <div class="metric">40 suppliers</div>
+            <div class="metric">30% reject rates</div>
+            <div class="metric">Scattered data</div>
+            <div class="metric">No visibility</div>
+            <p style="font-size: 2em; margin-top: 40px;">
+                <span class="highlight">"We're sending RFQs to suppliers who burned us before"</span>
+            </p>
+        </div>
+
+        <!-- Slide 2: Requirements Analysis -->
+        <div class="slide">
+            <h1>What They Asked For vs. What They Need</h1>
+            <div class="two-column">
+                <div class="column">
+                    <h3 class="warning">What They Asked For:</h3>
+                    <ul>
+                        <li>SAP/AS400 integration</li>
+                        <li>Machine learning predictions</li>
+                        <li>Mobile app development</li>
+                        <li>Real-time alerts</li>
+                        <li>Executive dashboards</li>
+                        <li>Predictive risk modeling</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3 class="success">What They Actually Need:</h3>
+                    <ul>
+                        <li><strong>Immediate visibility</strong> into supplier performance</li>
+                        <li><strong>Data-driven decisions</strong> for 3-week deadline</li>
+                        <li><strong>Actionable insights</strong> from existing data</li>
+                        <li><strong>Simple solution</strong> with minimal IT overhead</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Solution Architecture -->
+        <div class="slide">
+            <h1>Solution: Supplier Intelligence Dashboard</h1>
+            <div class="demo-box">
+                <h3>Technology Stack</h3>
+                <p>Node.js + Express + SQLite + Chart.js</p>
+                <p><span class="success">Simple, reliable, maintainable</span></p>
+            </div>
+            <div class="two-column">
+                <div class="column">
+                    <h3>Key Features:</h3>
+                    <ul>
+                        <li>Supplier performance scoring</li>
+                        <li>AI-powered chatbot</li>
+                        <li>Interactive dashboards</li>
+                        <li>Mobile-responsive design</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3>Business Impact:</h3>
+                    <ul>
+                        <li class="success">Ready for 3-week decision</li>
+                        <li class="success">Under $30K budget</li>
+                        <li class="success">Uses existing data</li>
+                        <li class="success">Minimal IT overhead</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Live Demo Preview -->
+        <div class="slide">
+            <h1>Live Demo</h1>
+            <div class="demo-box">
+                <h3>Supplier Performance at a Glance</h3>
+                <div style="display: flex; justify-content: space-around; margin: 30px 0;">
+                    <div style="background: #4CAF50; padding: 20px; border-radius: 10px;">
+                        <h4>Stellar Metalworks</h4>
+                        <p><strong>A+ Rating</strong></p>
+                        <p>100% on-time delivery</p>
+                        <p>0% rework required</p>
+                    </div>
+                    <div style="background: #F44336; padding: 20px; border-radius: 10px;">
+                        <h4>QuickFab Industries</h4>
+                        <p><strong>C- Rating</strong></p>
+                        <p>11% on-time delivery</p>
+                        <p>8/9 orders late</p>
+                    </div>
+                </div>
+            </div>
+            <div class="demo-box">
+                <h3>AI Chatbot Queries</h3>
+                <p>"Who is the best supplier?" → <span class="success">Stellar Metalworks</span></p>
+                <p>"Tell me about QuickFab" → <span class="warning">Warning: Delivery issues</span></p>
+            </div>
+        </div>
+
+        <!-- Slide 5: Implementation & ROI -->
+        <div class="slide">
+            <h1>Ready to Deploy</h1>
+            <div class="two-column">
+                <div class="column">
+                    <h3 class="success">Immediate Benefits:</h3>
+                    <ul>
+                        <li>Avoid 30% reject rates = <strong>$1.2M saved</strong></li>
+                        <li>Historical price visibility = <strong>$800K saved</strong></li>
+                        <li>Choose reliable suppliers = <strong>$2M saved</strong></li>
+                    </ul>
+                    <p style="font-size: 1.8em; margin-top: 20px;">
+                        <span class="highlight">Total: $4M annual loss prevention</span>
+                    </p>
+                </div>
+                <div class="column">
+                    <h3>Next Steps:</h3>
+                    <ul>
+                        <li><strong>Week 1:</strong> Deploy to production</li>
+                        <li><strong>Week 2:</strong> User training & validation</li>
+                        <li><strong>Week 3:</strong> Use for critical sourcing decision</li>
+                    </ul>
+                    <div class="metric" style="margin-top: 20px;">
+                        Investment: &lt;$30K
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Questions -->
+        <div class="slide">
+            <h1>Questions?</h1>
+            <div style="margin: 60px 0;">
+                <div class="metric">✅ Working prototype with real data</div>
+                <div class="metric">✅ Addresses core business problem</div>
+                <div class="metric">✅ Under budget and timeline</div>
+                <div class="metric">✅ Minimal IT requirements</div>
+            </div>
+            <h2 class="success">Ready to eliminate your $4M supplier decision problem?</h2>
+        </div>
+
+    </div>
+
+    <div class="slide-counter">
+        <span id="slideNumber">1</span> / <span id="totalSlides">6</span>
+    </div>
+
+    <div class="nav">
+        <button onclick="changeSlide(-1)">❮ Previous</button>
+        <button onclick="changeSlide(1)">Next ❯</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('slideNumber').textContent = currentSlide + 1;
+        }
+
+        function changeSlide(n) {
+            showSlide(currentSlide + n);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') changeSlide(1);
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+        });
+    </script>
+</body>
+</html>

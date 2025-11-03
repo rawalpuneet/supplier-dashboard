@@ -442,7 +442,7 @@ function startSupplierChat(supplierName) {
     const chatInput = document.getElementById('chatInput');
     chatInput.value = `Tell me about ${supplierName}`;
     chatInput.focus();
-    sendMessage();
+    sendMessage(true); // Pass true to indicate new chat
 }
 
 function closeSupplierModal() {
@@ -574,12 +574,20 @@ function switchTab(tabName) {
     document.getElementById(tabName).classList.add('active');
 }
 
+// Generate session ID
+let sessionId = 'session_' + Date.now();
+
 // Chatbot functionality
-async function sendMessage() {
+async function sendMessage(isNewChat = false) {
     const input = document.getElementById('chatInput');
     const message = input.value.trim();
     
     if (!message) return;
+    
+    // Generate new session ID for new chats
+    if (isNewChat) {
+        sessionId = 'session_' + Date.now();
+    }
     
     // Add user message
     addMessage(message, 'user');
@@ -594,7 +602,7 @@ async function sendMessage() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ message })
+            body: JSON.stringify({ message, sessionId, isNewChat })
         });
         
         const data = await response.json();

@@ -150,6 +150,54 @@
             gap: 1rem;
             margin-top: 1rem;
         }
+
+        .products-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .product-chart {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .product-metrics {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .product-charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .mini-chart {
+            height: 200px;
+            position: relative;
+        }
     </style>
 </head>
 <body>
@@ -196,6 +244,13 @@
                 </div>
             </div>
 
+            <div class="products-section">
+                <h3>Product Performance Analysis</h3>
+                <div id="productCharts">
+                    <!-- Product charts will be populated here -->
+                </div>
+            </div>
+
             <div class="notes-section">
                 <h3>Recent Notes</h3>
                 <div id="recentNotes">
@@ -206,5 +261,6 @@
     </div>
 
     <script src="supplier-detail.js"></script>
+    <script src="product-charts.js"></script>
 </body>
 </html>

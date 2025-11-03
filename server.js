@@ -140,13 +140,13 @@ app.get('/api/suppliers/:name', async (req, res) => {
 // Chatbot endpoint
 app.post('/api/chat', async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message, sessionId = 'default', isNewChat = false } = req.body;
     
     if (!message) {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    const response = await chatbot.processQuery(message);
+    const response = await chatbot.processQuery(message, sessionId, isNewChat);
     res.json(response);
   } catch (error) {
     console.error('Chat API error:', error);
@@ -255,7 +255,7 @@ app.get('/api/supplier-drilldown/:supplierId', async (req, res) => {
   try {
     const { supplierId } = req.params;
     
-    const [supplier, sentimentTrend, deliveryTrend, qualityTrend, notes] = await Promise.all([
+    const [supplier, sentimentTrend, deliveryTrend, qualityTrend, notes, productData] = await Promise.all([
       db.query('SELECT * FROM suppliers WHERE supplier_id = ?', [supplierId]),
       db.query(`
         SELECT 
@@ -291,14 +291,56 @@ app.get('/api/supplier-drilldown/:supplierId', async (req, res) => {
         GROUP BY substr(qi.inspection_date, 1, 7)
         ORDER BY month
       `, [supplierId]),
-      db.query('SELECT * FROM supplier_notes WHERE supplier_id = ? ORDER BY date DESC LIMIT 10', [supplierId])
+      db.query('SELECT * FROM supplier_notes WHERE supplier_id = ? ORDER BY date DESC LIMIT 10', [supplierId]),
+      db.query(`
+        SELECT 
+          so.part_number,
+          so.part_description,
+          so.order_date,
+          so.promised_date,
+          so.actual_delivery_date,
+          so.unit_price,
+          CASE WHEN so.actual_delivery_date <= so.promised_date THEN 1 ELSE 0 END as on_time,
+          COALESCE(100 - (CAST(qi.parts_rejected AS FLOAT) / qi.parts_inspected * 100), 95) as quality_score
+        FROM suppliers s
+        JOIN supplier_orders so ON s.supplier_name = so.supplier_name OR s.normalized_name = LOWER(REPLACE(REPLACE(so.supplier_name, ' Inc', ''), ' LLC', ''))
+        LEFT JOIN quality_inspections qi ON so.order_id = qi.order_id
+        WHERE s.supplier_id = ? AND so.actual_delivery_date IS NOT NULL
+        ORDER BY so.part_number, so.order_date
+      `, [supplierId])
     ]);
+    
+    // Process product data
+    const productMap = new Map();
+    productData.forEach(order => {
+      const key = `${order.part_number}-${order.part_description}`;
+      if (!productMap.has(key)) {
+        productMap.set(key, {
+          part_number: order.part_number,
+          part_description: order.part_description,
+          orders: [],
+          avgPrice: 0,
+          onTimeRate: 0,
+          qualityRate: 0
+        });
+      }
+      productMap.get(key).orders.push(order);
+    });
+    
+    const processedProductData = Array.from(productMap.values()).map(product => {
+      const orders = product.orders;
+      product.avgPrice = orders.reduce((sum, o) => sum + o.unit_price, 0) / orders.length;
+      product.onTimeRate = (orders.filter(o => o.on_time).length / orders.length) * 100;
+      product.qualityRate = orders.reduce((sum, o) => sum + o.quality_score, 0) / orders.length;
+      return product;
+    });
     
     res.json({
       supplier: supplier[0],
       sentimentTrend,
       deliveryTrend,
       qualityTrend,
+      productData: processedProductData,
       recentNotes: notes.map(note => ({
         ...note,
         keywords: note.keywords ? JSON.parse(note.keywords) : []
@@ -383,6 +425,138 @@ app.get('/', (req, res) => {
 // Serve supplier detail page
 app.get('/supplier-detail.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'supplier-detail.html'));
+});
+
+// Serve RFQ analyzer page
+app.get('/rfq-analyzer.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'rfq-analyzer.html'));
+});
+
+// Get RFQ analysis data
+app.get('/api/rfq-analysis', async (req, res) => {
+  try {
+    const products = await db.query(`
+      SELECT 
+        part_description,
+        COUNT(*) as rfq_count,
+        COUNT(DISTINCT supplier_name) as supplier_count,
+        AVG(quoted_price) as avg_price,
+        AVG(lead_time_weeks) as avg_lead_time,
+        GROUP_CONCAT(DISTINCT supplier_name) as suppliers_list
+      FROM rfq_responses
+      GROUP BY part_description
+      ORDER BY rfq_count DESC, part_description
+    `);
+    
+    const processedProducts = products.map(product => ({
+      ...product,
+      suppliers: product.suppliers_list ? product.suppliers_list.split(',') : []
+    }));
+    
+    res.json({ products: processedProducts });
+  } catch (error) {
+    console.error('RFQ analysis error:', error);
+    res.status(500).json({ error: 'Failed to fetch RFQ analysis data' });
+  }
+});
+
+// Get product-specific RFQ analysis
+app.get('/api/rfq-product-analysis/:productName', async (req, res) => {
+  try {
+    const productName = decodeURIComponent(req.params.productName);
+    
+    const [suppliers, allResponses, priceTrend, deliveryTrend, qualityTrend] = await Promise.all([
+      db.query(`
+        SELECT 
+          r.supplier_name,
+          COUNT(r.rfq_id) as quote_count,
+          AVG(r.quoted_price) as avg_quoted_price,
+          AVG(r.lead_time_weeks) as avg_lead_time,
+          COUNT(DISTINCT so.order_id) as order_count,
+          COALESCE(
+            SUM(CASE WHEN so.actual_delivery_date <= so.promised_date THEN 1 ELSE 0 END) * 100.0 / 
+            NULLIF(COUNT(CASE WHEN so.actual_delivery_date IS NOT NULL THEN 1 END), 0), 
+            0
+          ) as on_time_rate,
+          COALESCE(
+            AVG(100 - (CAST(qi.parts_rejected AS FLOAT) / qi.parts_inspected * 100)), 
+            95
+          ) as quality_rate
+        FROM rfq_responses r
+        LEFT JOIN supplier_orders so ON r.supplier_name = so.supplier_name 
+          AND (so.part_description LIKE '%' || SUBSTR(r.part_description, 1, 10) || '%' 
+               OR r.part_description LIKE '%' || SUBSTR(so.part_description, 1, 10) || '%')
+        LEFT JOIN quality_inspections qi ON so.order_id = qi.order_id
+        WHERE r.part_description = ?
+        GROUP BY r.supplier_name
+        ORDER BY AVG(r.quoted_price)
+      `, [productName]),
+      
+      db.query(`
+        SELECT rfq_id, supplier_name, quote_date, quoted_price, lead_time_weeks, notes
+        FROM rfq_responses 
+        WHERE part_description = ?
+        ORDER BY quote_date DESC
+      `, [productName]),
+      
+      db.query(`
+        SELECT 
+          r.supplier_name,
+          substr(r.quote_date, 1, 7) as month,
+          AVG(r.quoted_price) as avg_price
+        FROM rfq_responses r
+        WHERE r.part_description = ?
+        GROUP BY r.supplier_name, substr(r.quote_date, 1, 7)
+        ORDER BY r.supplier_name, month
+      `, [productName]),
+      
+      db.query(`
+        SELECT 
+          so.supplier_name,
+          substr(so.order_date, 1, 7) as month,
+          COUNT(*) as total_orders,
+          SUM(CASE WHEN so.actual_delivery_date <= so.promised_date THEN 1 ELSE 0 END) as on_time_orders
+        FROM supplier_orders so
+        WHERE so.supplier_name IN (
+          SELECT DISTINCT supplier_name FROM rfq_responses WHERE part_description = ?
+        )
+          AND (so.part_description LIKE '%' || SUBSTR(?, 1, 10) || '%' 
+               OR ? LIKE '%' || SUBSTR(so.part_description, 1, 10) || '%')
+          AND so.actual_delivery_date IS NOT NULL
+        GROUP BY so.supplier_name, substr(so.order_date, 1, 7)
+        ORDER BY so.supplier_name, month
+      `, [productName, productName, productName]),
+      
+      db.query(`
+        SELECT 
+          so.supplier_name,
+          substr(qi.inspection_date, 1, 7) as month,
+          AVG(100 - (CAST(qi.parts_rejected AS FLOAT) / qi.parts_inspected * 100)) as quality_score
+        FROM supplier_orders so
+        JOIN quality_inspections qi ON so.order_id = qi.order_id
+        WHERE so.supplier_name IN (
+          SELECT DISTINCT supplier_name FROM rfq_responses WHERE part_description = ?
+        )
+          AND (so.part_description LIKE '%' || SUBSTR(?, 1, 10) || '%' 
+               OR ? LIKE '%' || SUBSTR(so.part_description, 1, 10) || '%')
+          AND qi.inspection_date IS NOT NULL
+        GROUP BY so.supplier_name, substr(qi.inspection_date, 1, 7)
+        ORDER BY so.supplier_name, month
+      `, [productName, productName, productName])
+    ]);
+    
+    res.json({ 
+      product_name: productName,
+      suppliers: suppliers,
+      all_responses: allResponses,
+      price_trend: priceTrend,
+      delivery_trend: deliveryTrend,
+      quality_trend: qualityTrend
+    });
+  } catch (error) {
+    console.error('Product RFQ analysis error:', error);
+    res.status(500).json({ error: 'Failed to fetch product RFQ analysis' });
+  }
 });
 
 // Start server

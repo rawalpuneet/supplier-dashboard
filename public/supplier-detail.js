@@ -111,6 +111,7 @@ function renderCharts() {
     renderSentimentChart();
     renderDeliveryChart();
     renderQualityChart();
+    renderProductCharts();
 }
 
 function renderSentimentChart() {
